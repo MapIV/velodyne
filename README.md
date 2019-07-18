@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/ros-drivers/velodyne.svg?style=svg)](https://circleci.com/gh/ros-drivers/velodyne)
 
-Overview
+Overview 
 ========
 
 Velodyne<sup>1</sup> is a collection of ROS<sup>2</sup> packages supporting `Velodyne high
