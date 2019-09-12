@@ -163,6 +163,7 @@ public:
   int setupOffline(std::string calibration_file, double max_range_, double min_range_);
 
   void unpack(const velodyne_msgs::VelodynePacket& pkt, DataContainerBase& data);
+  void unpack_T(const velodyne_msgs::VelodynePacket& pkt, DataContainerBase& data);
 
   void setParameters(double min_range, double max_range, double view_direction, double view_width);
 
@@ -193,6 +194,13 @@ private:
 
   /** add private function to handle the VLP16 **/
   void unpack_vlp16(const velodyne_msgs::VelodynePacket& pkt, DataContainerBase& data);
+  void unpack_vlp16_T(const velodyne_msgs::VelodynePacket& pkt, DataContainerBase& data);
+
+  bool pointInRange(float range)
+  {
+    return (range >= config_.min_range
+            && range <= config_.max_range);
+  }
 };
 
 }  // namespace velodyne_rawdata

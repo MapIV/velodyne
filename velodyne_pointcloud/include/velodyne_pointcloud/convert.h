@@ -88,11 +88,47 @@ class Convert
     Config config_;
     bool first_rcfg_call;
 
-    // Additional parameters for checking azimuth differences between consecutive data blocks
-    velodyne_msgs::VelodyneScanPtr adjusted_vel_msg_ptr {new velodyne_msgs::VelodyneScan};
-    int last_azimuth_;
-    int current_azimuth_diff_;
-    int prev_azimuth_diff_;
+  // diagnostics updater
+  diagnostic_updater::Updater diagnostics_;
+  double diag_min_freq_;
+  double diag_max_freq_;
+  boost::shared_ptr<diagnostic_updater::TopicDiagnostic> diag_topic_;
+};
+
+class Convert_T
+{
+  public:
+    Convert_T(ros::NodeHandle node, ros::NodeHandle private_nh);
+    ~Convert_T() {}
+
+  private:
+    void callback(velodyne_pointcloud::CloudNodeConfig &config, uint32_t level);
+    void processScan(const velodyne_msgs::VelodyneScan::ConstPtr &scanMsg);
+
+    boost::shared_ptr<dynamic_reconfigure::Server<velodyne_pointcloud::CloudNodeConfig> > srv_;
+
+    boost::shared_ptr<velodyne_rawdata::RawData> data_;
+    ros::Subscriber velodyne_scan_;
+    ros::Publisher output_;
+
+    boost::shared_ptr<velodyne_rawdata::DataContainerBase> container_ptr_;
+
+    boost::mutex reconfigure_mtx_;
+
+    /// configuration parameters
+    typedef struct
+    {
+      std::string target_frame;      ///< target frame
+      std::string fixed_frame;       ///< fixed frame
+      bool organize_cloud;           ///< enable/disable organized cloud structure
+      double max_range;              ///< maximum range to publish
+      double min_range;              ///< minimum range to publish
+      uint16_t num_lasers;           ///< number of lasers
+      int npackets;                  ///< number of packets to combine
+    }
+    Config;
+    Config config_;
+    bool first_rcfg_call;
 
   // diagnostics updater
   diagnostic_updater::Updater diagnostics_;
@@ -100,6 +136,7 @@ class Convert
   double diag_max_freq_;
   boost::shared_ptr<diagnostic_updater::TopicDiagnostic> diag_topic_;
 };
+
 }  // namespace velodyne_pointcloud
 
 #endif  // VELODYNE_POINTCLOUD_CONVERT_H
